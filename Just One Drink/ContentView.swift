@@ -8,17 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var tabSelection = 1
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView(selection: $tabSelection) {
+            Group {
+                AddDrinkView(tabSelection: $tabSelection)
+                    .tabItem {
+                        Label("Add Drink", systemImage: "wineglass")
+                    }
+                    .tag(1)
+                ListDrinksView()
+                    .tabItem {
+                        Label("List Drinks", systemImage: "list.bullet")
+                    }
+                    .tag(2)
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView().modelContainer(Drink.preview)
 }
