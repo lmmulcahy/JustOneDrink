@@ -13,6 +13,7 @@ struct AddDrinkView: View {
     
     @Binding var tabSelection: Int
     
+    @State private var date = Date()
     @State private var selectedDrinkType: DrinkType = .beer
     @State private var selectedUnits: SizeUnits = .oz
     @State private var drinkSize: Double = 12
@@ -36,8 +37,22 @@ struct AddDrinkView: View {
         }
     }
     
+    init(tabSelection: Binding<Int>) {
+        self._tabSelection = tabSelection
+        UISegmentedControl.appearance().setTitleTextAttributes([.font : UIFont.preferredFont(forTextStyle: .title2)], for: .normal)
+    }
+    
     var body: some View {
         VStack {
+            Spacer()
+            Text("Add a drink")
+                .font(.largeTitle)
+            DatePicker(
+                "Drink time: ",
+                selection: $date,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.compact)
             Spacer()
             Text("Drink Type")
             Picker("Drink", selection: $selectedDrinkType) {
@@ -68,6 +83,7 @@ struct AddDrinkView: View {
             }
             .pickerStyle(.palette)
             Spacer()
+            Text("Drink Size: " + String(format: "%0.1f", drinkSize) + "\(selectedUnits.rawValue)")
             if selectedUnits == .oz {
                 Slider(value: $drinkSize, in: 0...32) {} minimumValueLabel: {
                     Text("0")
@@ -93,8 +109,8 @@ struct AddDrinkView: View {
                     Text("1000")
                 }
             }
-            Text("Drink Size: " + String(format: "%0.1f", drinkSize) + "\(selectedUnits.rawValue)")
             Spacer()
+            Text("Alcohol Content: " + String(format: "%0.1f", alcoholContent) + "%")
             if selectedDrinkType == .beer {
                 Slider(value: $alcoholContent, in: 0...12) {} minimumValueLabel: {
                     Text("0")
@@ -114,17 +130,19 @@ struct AddDrinkView: View {
                     Text("100")
                 }
             }
-            Text("Alcohol Content: " + String(format: "%0.1f", alcoholContent) + "%")
             Spacer()
             Button("Add") {
                 modelContext.insert(Drink(
                     type: selectedDrinkType,
                     alcoholContent: alcoholContent,
                     size: drinkSize,
-                    sizeUnits: selectedUnits))
+                    sizeUnits: selectedUnits,
+                    whenDrunk: date))
                 tabSelection = 2
             }.buttonStyle(.borderedProminent)
-        }.padding()
+        }
+        .padding()
+        .font(.title)
     }
 }
 

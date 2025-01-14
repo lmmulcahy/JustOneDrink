@@ -51,6 +51,7 @@ struct ListDrinksView: View {
                 Spacer()
                 Text("Standard\nDrinks")
             }
+            .font(.title2)
             .padding()
             List(dates.sorted(by: >), id: \.self) { date in
                 Section {
