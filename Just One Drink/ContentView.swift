@@ -23,6 +23,11 @@ struct ContentView: View {
                         Label("List Drinks", systemImage: "list.bullet")
                     }
                     .tag(2)
+                StatsView()
+                    .tabItem {
+                        Label("Stats", systemImage: "chart.bar.xaxis")
+                    }
+                    .tag(3)
             }
         }
     }

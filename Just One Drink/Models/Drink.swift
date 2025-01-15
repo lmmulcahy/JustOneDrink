@@ -65,28 +65,32 @@ enum SizeUnits: String, Codable, CaseIterable {
     case l
 }
 
+func dateFromString(string: String) -> Date {
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withFullDate] // Added format options
+        let date = dateFormatter.date(from: string) ?? Date.now
+        print(date)
+        print("ISO TIME: " + string)
+        return date
+    }
+
 extension Drink {
     @MainActor static var preview: ModelContainer {
         let container = try! ModelContainer(for: Drink.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true), ModelConfiguration(isStoredInMemoryOnly: true))
         
-        let d1: Drink = .init(type:.beer, alcoholContent: 8.3, size: 12, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736120590))
-        
-        let d2: Drink = .init(name: "d2", type:.beer, alcoholContent: 4.3, size: 16, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735785990))
-        
-        let d3: Drink = .init(name: "d3", type:.wine, alcoholContent: 18.3, size: 5, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736131590))
-        
-        let d4: Drink = .init(type:.wine, alcoholContent: 13.4, size: 6, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736130590))
-        
-        let d5: Drink = .init(type:.spirits, alcoholContent: 40, size: 2, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735796790))
-        
-        let d6: Drink = .init(name: "d6", type:.spirits, alcoholContent: 50, size: 2.5, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735710390))
-        
-        container.mainContext.insert(d1)
-        container.mainContext.insert(d2)
-        container.mainContext.insert(d3)
-        container.mainContext.insert(d4)
-        container.mainContext.insert(d5)
-        container.mainContext.insert(d6)
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 8.3, size: 12, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736120590)))
+        container.mainContext.insert(Drink(name: "d2", type:.beer, alcoholContent: 4.3, size: 16, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735785990)))
+        container.mainContext.insert(Drink(name: "d3", type:.wine, alcoholContent: 18.3, size: 5, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736131590)))
+        container.mainContext.insert(Drink(type:.wine, alcoholContent: 13.4, size: 6, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1736130590)))
+        container.mainContext.insert(Drink(type:.spirits, alcoholContent: 40, size: 2, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735796790)))
+        container.mainContext.insert(Drink(name: "d6", type:.spirits, alcoholContent: 50, size: 2.5, sizeUnits: .oz, whenDrunk: Date(timeIntervalSince1970: 1735710390)))
+        container.mainContext.insert(Drink(type:.spirits, alcoholContent: 50, size: 2.5, sizeUnits: .oz, whenDrunk: dateFromString(string: "2022-05-02T00:00-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2023-05-12T13:30-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2024-01-22T18:30-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2024-01-22T19:30-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2024-01-22T19:50-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2024-01-22T20:10-08:00")))
+        container.mainContext.insert(Drink(type:.beer, alcoholContent: 5.8, size: 16, sizeUnits: .oz, whenDrunk: dateFromString(string: "2024-01-22T20:30-08:00")))
 
         return container
     }
