@@ -77,10 +77,11 @@ struct ListDrinksView: View {
                 }
                 .headerProminence(.increased)
             }
+            .padding(.bottom, 1)
         }
     }
 }
 
 #Preview {
-    ListDrinksView().modelContainer(Drink.preview)
+    ListDrinksView().modelContainer(PreviewData.shared)
 }

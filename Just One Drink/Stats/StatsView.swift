@@ -77,9 +77,7 @@ struct StatsView: View {
         case .day:
             return 86400 * 7 // 7 days
         case .weekOfYear:
-            let now = Date()
-            let range = Calendar.current.range(of: .day, in: .month, for: now)
-            return Double((range?.count ?? 30) * 86400) // Days in the current month
+            return 86400 * 7 * 8 // 8 weeks
         case .month:
             return 86400 * 365 // 1 year
        case .year:
@@ -91,5 +89,5 @@ struct StatsView: View {
 }
 
 #Preview {
-    StatsView().modelContainer(Drink.preview)
+    StatsView().modelContainer(PreviewData.shared)
 }

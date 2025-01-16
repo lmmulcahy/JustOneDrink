@@ -14,7 +14,11 @@ struct Just_One_DrinkApp: App {
     
     init() {
         do {
-            container = try ModelContainer(for: Drink.self)
+            container = try ModelContainer(for: Drink.self, User.self)
+            let empty = try container.mainContext.fetch(FetchDescriptor<User>()).isEmpty
+            if empty {
+                container.mainContext.insert(User(weight: 130, sex: .male))
+            }
         } catch {
             fatalError("Couldn't set up SwiftData container: \(error)")
         }

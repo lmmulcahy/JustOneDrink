@@ -16,24 +16,29 @@ struct AddDrinkView: View {
     @State private var date = Date()
     @State private var selectedDrinkType: DrinkType = .beer
     @State private var selectedUnits: SizeUnits = .oz
+    @State private var previousUnits: SizeUnits = .oz
     @State private var drinkSize: Double = 12
     @State private var alcoholContent: Double = 5
 
-    struct NormalDrinkStats {
+    struct DrinkConstants {
         var averageSize: Double
         var averageAlcoholContent: Double
-        var minSize: Double
-        var maxSize: Double
+        var minSizeOz: Double
+        var maxSizeOz: Double
         var minAlcoholContent: Double
         var maxAlcoholContent: Double
         
-        init(averageSize: Double, averageAlcoholContent: Double, minSize: Double, maxSize: Double, minAlcoholContent: Double, maxAlcoholContent: Double) {
-            self.averageSize = averageSize
-            self.averageAlcoholContent = averageAlcoholContent
-            self.minSize = minSize
-            self.maxSize = maxSize
-            self.minAlcoholContent = minAlcoholContent
-            self.maxAlcoholContent = maxAlcoholContent
+        static let beer = DrinkConstants(averageSize: 12, averageAlcoholContent: 5, minSizeOz: 0, maxSizeOz: 33.813, minAlcoholContent: 0, maxAlcoholContent: 12)
+        static let wine = DrinkConstants(averageSize: 5, averageAlcoholContent: 13, minSizeOz: 0, maxSizeOz: 12, minAlcoholContent: 7, maxAlcoholContent: 20)
+        static let spirits = DrinkConstants(averageSize: 1.5, averageAlcoholContent: 40, minSizeOz: 0, maxSizeOz: 5, minAlcoholContent: 20, maxAlcoholContent: 100)
+        
+        // A function to get constants based on the selected drink type
+        static func forDrinkType(_ type: DrinkType) -> DrinkConstants {
+            switch type {
+            case .beer: return .beer
+            case .wine: return .wine
+            case .spirits: return .spirits
+            }
         }
     }
     
@@ -45,14 +50,13 @@ struct AddDrinkView: View {
     var body: some View {
         VStack {
             Spacer()
-            Text("Add a drink")
-                .font(.largeTitle)
             DatePicker(
                 "Drink time: ",
                 selection: $date,
                 displayedComponents: [.date, .hourAndMinute]
             )
             .datePickerStyle(.compact)
+            
             Spacer()
             Text("Drink Type")
             Picker("Drink", selection: $selectedDrinkType) {
@@ -62,18 +66,11 @@ struct AddDrinkView: View {
             }
             .pickerStyle(.palette)
             .onChange(of: selectedDrinkType) {
-                switch(selectedDrinkType) {
-                case .beer:
-                    drinkSize = 12
-                    alcoholContent = 5
-                case .wine:
-                    drinkSize = 5
-                    alcoholContent = 13
-                case .spirits:
-                    drinkSize = 1.5
-                    alcoholContent = 40
-                }
+                let constants = DrinkConstants.forDrinkType(selectedDrinkType)
+                drinkSize = convertFromOz(constants.averageSize, units: selectedUnits)
+                alcoholContent = constants.averageAlcoholContent
             }
+            
             Spacer()
             Text("Size Units")
             Picker("Units", selection: $selectedUnits) {
@@ -82,54 +79,35 @@ struct AddDrinkView: View {
                 }
             }
             .pickerStyle(.palette)
-            Spacer()
-            Text("Drink Size: " + String(format: "%0.1f", drinkSize) + "\(selectedUnits.rawValue)")
-            if selectedUnits == .oz {
-                Slider(value: $drinkSize, in: 0...32) {} minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("32")
-                }
-            } else if selectedUnits == .pint {
-                Slider(value: $drinkSize, in: 0...4) {} minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("4")
-                }
-            } else if selectedUnits == .l {
-                Slider(value: $drinkSize, in: 0...2) {} minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("2")
-                }
-            } else {
-                Slider(value: $drinkSize, in: 0...1000) {} minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("1000")
-                }
+            .onChange(of: selectedUnits) {
+                drinkSize = convertUnits(drinkSize, from: previousUnits, to: selectedUnits)
+                previousUnits = selectedUnits
             }
+
+            Spacer()
+            if selectedUnits == .pint || selectedUnits == .l {
+                Text("Drink Size: " + String(format: "%0.2f", drinkSize) + "\(selectedUnits.rawValue)")
+            } else {
+                Text("Drink Size: " + String(format: "%0.1f", drinkSize) + "\(selectedUnits.rawValue)")
+            }
+            Slider(value: $drinkSize, in: drinkSliderRange()) {
+                Text("Size")
+            } minimumValueLabel: {
+                Text("\(drinkSliderRange().lowerBound, specifier: "%.0f")")
+            } maximumValueLabel: {
+                Text("\(drinkSliderRange().upperBound, specifier: "%.0f")")
+            }
+            
             Spacer()
             Text("Alcohol Content: " + String(format: "%0.1f", alcoholContent) + "%")
-            if selectedDrinkType == .beer {
-                Slider(value: $alcoholContent, in: 0...12) {} minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("12")
-                }
-            } else if selectedDrinkType == .wine {
-                Slider(value: $alcoholContent, in: 7...20) {} minimumValueLabel: {
-                    Text("7")
-                } maximumValueLabel: {
-                    Text("20")
-                }
-            } else if selectedDrinkType == .spirits {
-                Slider(value: $alcoholContent, in: 20...100) {} minimumValueLabel: {
-                    Text("20")
-                } maximumValueLabel: {
-                    Text("100")
-                }
+            Slider(value: $alcoholContent, in: alcoholSliderRange()) {
+                Text("Alcohol")
+            } minimumValueLabel: {
+                Text("\(alcoholSliderRange().lowerBound, specifier: "%.0f")")
+            } maximumValueLabel: {
+                Text("\(alcoholSliderRange().upperBound, specifier: "%.0f")")
             }
+            
             Spacer()
             Button("Add") {
                 modelContext.insert(Drink(
@@ -143,6 +121,48 @@ struct AddDrinkView: View {
         }
         .padding()
         .font(.title)
+    }
+    
+    // Helper function to get slider range for drink size based on units
+    private func drinkSliderRange() -> ClosedRange<Double> {
+        let constants = DrinkConstants.forDrinkType(selectedDrinkType)
+        return 0...convertFromOz(constants.maxSizeOz, units: selectedUnits)
+    }
+    
+    private func convertToOz(_ value: Double, units: SizeUnits) -> Double {
+        switch units {
+        case .oz:
+            return value
+        case .pint:
+            return value * 16
+        case .ml:
+            return value / 29.5735
+        case .l:
+            return value * 33.814
+        }
+    }
+    
+    private func convertFromOz(_ value: Double, units: SizeUnits) -> Double {
+        switch units {
+        case .oz:
+            return value
+        case .pint:
+            return value / 16
+        case .ml:
+            return value * 29.5735
+        case .l:
+            return value / 33.814
+        }
+    }
+    
+    private func convertUnits(_ value: Double, from: SizeUnits, to: SizeUnits) -> Double {
+        return convertFromOz(convertToOz(value, units: from), units: to)
+    }
+    
+    // Helper function to get slider range for alcohol content based on drink type
+    private func alcoholSliderRange() -> ClosedRange<Double> {
+        let constants = DrinkConstants.forDrinkType(selectedDrinkType)
+        return constants.minAlcoholContent...constants.maxAlcoholContent
     }
 }
 
