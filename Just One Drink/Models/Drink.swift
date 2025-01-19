@@ -9,7 +9,8 @@ import Foundation
 import SwiftData
 
 @Model
-class Drink {
+class Drink: Hashable {
+    var id: UUID = UUID()
     var name: String
     var type: DrinkType
     var alcoholContent: Double

@@ -17,9 +17,10 @@ struct ListDrinksView: View {
     private var drinksByDate: [Date: [DrinkDrunk]] {
         drinks.reduce(into: [:]) { result, drink in
             let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: drink.whenDrunk)
-            let date = Calendar.current.date(from: calendarDate)!
-            let existing = result[date] ?? []
-            result[date] = existing + [drink]
+            if let date = Calendar.current.date(from: calendarDate) {
+                let existing = result[date] ?? []
+                result[date] = existing + [drink]
+            }
         }
     }
     
