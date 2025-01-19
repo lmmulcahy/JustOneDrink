@@ -31,7 +31,7 @@ struct DrinkDrinkView: View {
             Picker("Drink", selection: $selectedDrink) {
                 ForEach(drinks, id: \.self) { drink in
                     let drinkText = drink.name + " - " + String(drink.size) + drink.sizeUnits.rawValue
-                    Text(drinkText)
+                    Text(drinkText).tag(drink as Drink?)
                 }
             }
             .pickerStyle(.wheel)
@@ -43,7 +43,6 @@ struct DrinkDrinkView: View {
                         drink: drink,
                         whenDrunk: date))
                     tabSelection = 3
-                    print(tabSelection)
                 }
             }.buttonStyle(.borderedProminent)
         }

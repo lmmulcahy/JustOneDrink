@@ -35,9 +35,9 @@ struct ListDrinksView: View {
         return result
     }
     
-    func delete(at offsets: IndexSet) {
+    func delete(at offsets: IndexSet, in drinksForDate: [DrinkDrunk]) {
         for offset in offsets {
-            let drink = drinks[offset]
+            let drink = drinksForDate[offset]
             modelContext.delete(drink)
         }
     }
@@ -65,7 +65,9 @@ struct ListDrinksView: View {
                                 Text(String(format: "%0.1f", drink.drink.standardDrinks()))
                             }
                         }
-                        .onDelete(perform: delete)
+                        .onDelete { offsets in
+                            delete(at: offsets, in:                         thisDateDrinks.sorted(by: { $0.whenDrunk > $1.whenDrunk}))
+                        }
                     }
                 }
                 header: {
