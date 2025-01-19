@@ -19,6 +19,8 @@ struct AddDrinkView: View {
     @State private var previousUnits: SizeUnits = .oz
     @State private var drinkSize: Double = 12
     @State private var alcoholContent: Double = 5
+    @State private var isShowingNameAlert = false
+    @State private var favoriteDrinkName = ""
 
     struct DrinkConstants {
         var averageSize: Double
@@ -109,18 +111,47 @@ struct AddDrinkView: View {
             }
             
             Spacer()
-            Button("Add") {
-                modelContext.insert(Drink(
-                    type: selectedDrinkType,
-                    alcoholContent: alcoholContent,
-                    size: drinkSize,
-                    sizeUnits: selectedUnits,
-                    whenDrunk: date))
-                tabSelection = 2
-            }.buttonStyle(.borderedProminent)
+            HStack {
+                Button("Drink") {
+                    modelContext.insert(DrinkDrunk(
+                        drink: Drink(
+                        type: selectedDrinkType,
+                        alcoholContent: alcoholContent,
+                        size: drinkSize,
+                        sizeUnits: selectedUnits),
+                        whenDrunk: date))
+                    tabSelection = 3
+                }.buttonStyle(.borderedProminent)
+                Spacer()
+                Button("Add Favorite") {
+                    isShowingNameAlert = true
+                }.buttonStyle(.borderedProminent)
+            }
+        }
+        .onAppear {
+            date = Date() // Update the date to the current time whenever the view appears
         }
         .padding()
         .font(.title)
+        .alert("Enter Favorite Drink Name", isPresented: $isShowingNameAlert, actions: {
+            TextField("Drink Name", text: $favoriteDrinkName)
+            Button("Save") {
+                modelContext.insert(Drink(
+                    name: favoriteDrinkName,
+                    type: selectedDrinkType,
+                    alcoholContent: alcoholContent,
+                    size: drinkSize,
+                    sizeUnits: selectedUnits))
+                favoriteDrinkName = ""
+                tabSelection = 1
+            }
+            .disabled(favoriteDrinkName.isEmpty) // Disable Save if name is empty
+            Button("Cancel", role: .cancel) {
+                favoriteDrinkName = ""
+            }
+        }, message: {
+            Text("Please provide a name for your favorite drink.")
+        })
     }
     
     // Helper function to get slider range for drink size based on units

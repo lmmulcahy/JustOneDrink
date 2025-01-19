@@ -14,9 +14,9 @@ struct Just_One_DrinkApp: App {
     
     init() {
         do {
-            container = try ModelContainer(for: Drink.self, User.self)
-            let empty = try container.mainContext.fetch(FetchDescriptor<User>()).isEmpty
-            if empty {
+            container = try ModelContainer(for: Drink.self, DrinkDrunk.self, User.self)
+            let emptyUser = try container.mainContext.fetch(FetchDescriptor<User>()).isEmpty
+            if emptyUser {
                 container.mainContext.insert(User(weight: 130, sex: .male))
             }
         } catch {

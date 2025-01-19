@@ -15,21 +15,26 @@ struct ContentView: View {
         NavigationView {
             TabView(selection: $tabSelection) {
                 Group {
-                    AddDrinkView(tabSelection: $tabSelection)
+                    DrinkDrinkView(tabSelection: $tabSelection)
                         .tabItem {
-                            Label("Add Drink", systemImage: "wineglass")
+                            Label("Drink a Drink", systemImage: "wineglass")
                         }
                         .tag(1)
+                    AddDrinkView(tabSelection: $tabSelection)
+                        .tabItem {
+                            Label("Add Drink", systemImage: "plus")
+                        }
+                        .tag(2)
                     ListDrinksView()
                         .tabItem {
                             Label("List Drinks", systemImage: "list.bullet")
                         }
-                        .tag(2)
+                        .tag(3)
                     StatsView()
                         .tabItem {
                             Label("Stats", systemImage: "chart.bar.xaxis")
                         }
-                        .tag(3)
+                        .tag(4)
                 }
             }
             .navigationTitle(tabTitle)
@@ -52,9 +57,10 @@ struct ContentView: View {
     // Dynamic title based on the selected tab
     private var tabTitle: String {
         switch tabSelection {
-        case 1: return "Add Drink"
-        case 2: return "List Drinks"
-        case 3: return "Stats"
+        case 1: return "Drink a Drink"
+        case 2: return "Add Drink"
+        case 3: return "List Drinks"
+        case 4: return "Stats"
         default: return "App"
         }
     }

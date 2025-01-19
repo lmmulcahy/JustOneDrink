@@ -12,9 +12,9 @@ import SwiftUI
 struct ListDrinksView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @Query(sort: \Drink.whenDrunk) private var drinks: [Drink]
+    @Query(sort: \DrinkDrunk.whenDrunk) private var drinks: [DrinkDrunk]
     
-    private var drinksByDate: [Date: [Drink]] {
+    private var drinksByDate: [Date: [DrinkDrunk]] {
         drinks.reduce(into: [:]) { result, drink in
             let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: drink.whenDrunk)
             let date = Calendar.current.date(from: calendarDate)!
@@ -29,7 +29,7 @@ struct ListDrinksView: View {
         var result = [Date: Double]()
         
         for date in dates {
-            result[date] = drinksByDate[date]?.reduce(0, { $0 + $1.standardDrinks() })
+            result[date] = drinksByDate[date]?.reduce(0, { $0 + $1.drink.standardDrinks() })
         }
         
         return result
@@ -60,9 +60,9 @@ struct ListDrinksView: View {
                             HStack {
                                 Text(drink.whenDrunk.formatted(date: .omitted, time: .shortened))
                                 Spacer()
-                                Text(drink.name)
+                                Text(drink.drink.name)
                                 Spacer()
-                                Text(String(format: "%0.1f", drink.standardDrinks()))
+                                Text(String(format: "%0.1f", drink.drink.standardDrinks()))
                             }
                         }
                         .onDelete(perform: delete)

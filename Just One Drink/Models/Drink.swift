@@ -15,27 +15,17 @@ class Drink {
     var alcoholContent: Double
     var size: Double
     var sizeUnits: SizeUnits
-    var whenDrunk: Date
     
     convenience init(type: DrinkType, alcoholContent: Double, size: Double, sizeUnits: SizeUnits) {
         self.init(name: type.rawValue, type: type, alcoholContent: alcoholContent, size: size, sizeUnits: sizeUnits)
     }
     
-    convenience init(name: String, type: DrinkType, alcoholContent: Double, size: Double, sizeUnits: SizeUnits) {
-        self.init(name: type.rawValue, type: type, alcoholContent: alcoholContent, size: size, sizeUnits: sizeUnits, whenDrunk: Date.now)
-    }
-    
-    convenience init(type: DrinkType, alcoholContent: Double, size: Double, sizeUnits: SizeUnits, whenDrunk: Date) {
-        self.init(name: type.rawValue, type: type, alcoholContent: alcoholContent, size: size, sizeUnits: sizeUnits, whenDrunk: whenDrunk)
-    }
-    
-    init(name: String, type: DrinkType, alcoholContent: Double, size: Double, sizeUnits: SizeUnits, whenDrunk: Date) {
+    init(name: String, type: DrinkType, alcoholContent: Double, size: Double, sizeUnits: SizeUnits) {
         self.name = name
         self.type = type
         self.alcoholContent = alcoholContent / 100
         self.size = size
         self.sizeUnits = sizeUnits
-        self.whenDrunk = whenDrunk
     }
     
     func standardDrinks() -> Double {

@@ -12,7 +12,7 @@ import SwiftUI
 struct StatsView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @Query(sort: \Drink.whenDrunk) private var drinks: [Drink]
+    @Query(sort: \DrinkDrunk.whenDrunk) private var drinks: [DrinkDrunk]
     
     @State private var selectedUnit: Calendar.Component = .day
     
@@ -22,9 +22,9 @@ struct StatsView: View {
                 ForEach(drinks, id: \.id) { drink in
                     BarMark(
                         x: .value("Date", drink.whenDrunk, unit: selectedUnit),
-                        y: .value("Drinks", drink.standardDrinks())
+                        y: .value("Drinks", drink.drink.standardDrinks())
                     )
-                    .foregroundStyle(by: .value("Drink Type", drink.type.rawValue))
+                    .foregroundStyle(by: .value("Drink Type", drink.drink.type.rawValue))
                 }
             }
             .chartScrollableAxes(.horizontal)
